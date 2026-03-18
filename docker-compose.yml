@@ -1,0 +1,57 @@
+# ════════════════════════════════════════════════════════════════
+# Docker Compose — Spring Boot + PostgreSQL + Adminer
+# ════════════════════════════════════════════════════════════════
+# Uso:
+#   docker compose up -d          (arrancar todo)
+#   docker compose logs -f app    (ver logs de la app)
+#   docker compose down -v        (parar y borrar volúmenes)
+# ════════════════════════════════════════════════════════════════
+
+services:
+  # ─── Aplicación Spring Boot ──────────────────────────────────
+  app:
+    build: .
+    ports:
+      - "${APP_PORT:-8081}:${APP_PORT:-8081}"
+    environment:
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/pizzeria}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-secret}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_SQL_INIT_MODE=never
+      - SPRING_H2_CONSOLE_ENABLED=false
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  # ─── PostgreSQL ──────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-pizzeria}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─── Adminer (panel web para ver la BD) ──────────────────────
+  adminer:
+    image: adminer
+    ports:
+      - "9090:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

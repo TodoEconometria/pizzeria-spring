@@ -1,0 +1,67 @@
+# =============================================
+# .dockerignore — Pizzeria Spring Boot
+# =============================================
+# Excluye archivos que NO deben entrar en la
+# imagen Docker. Reduce el tamaño del build
+# context y evita filtrar secretos o cache.
+# =============================================
+
+# --- Build y dependencias ---
+target/
+*.jar
+*.war
+!src/**/*.jar
+
+# --- Maven Wrapper (no necesario en Docker, el Dockerfile usa maven:3.9) ---
+.mvn/
+mvnw
+mvnw.cmd
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# --- Docker (evitar recursion) ---
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# --- Git ---
+.git/
+.gitignore
+.gitattributes
+
+# --- Claude Code / IA ---
+.claude/
+.claude_memory/
+
+# --- Secretos y entorno ---
+.env
+.env.*
+*.pem
+*.key
+
+# --- Notas del profesor (no deben entrar en la imagen) ---
+__REFERENCIA*
+__INSTRUCCIONES*
+HELP.md
+
+# --- Documentacion ---
+*.md
+LICENSE
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Sistema operativo ---
+Thumbs.db
+.DS_Store
+desktop.ini
