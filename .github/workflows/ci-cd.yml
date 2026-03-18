@@ -40,6 +40,7 @@ jobs:
       - name: Build and test
         run: mvn clean verify -B
         env:
+          SPRING_PROFILES_ACTIVE: ci
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/pizzeria_test
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: test_password
